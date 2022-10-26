@@ -5,6 +5,7 @@ require "minitest/reporters"
 Minitest::Reporters.use!
 
 class ActiveSupport::TestCase
+  ENV['RAILS_ENV'] ||= 'test'
   # Run tests in parallel with specified workers
   parallelize(workers: :number_of_processors)
 
@@ -17,5 +18,20 @@ class ActiveSupport::TestCase
   # Returns true if a test user is logged in.
   def is_logged_in?
     !session[:user_id].nil?
+  end
+
+  # Log in as a particular user.
+  def log_in_as(user)
+    puts "1111 + #{user.id}"
+    session[:user_id] = user.id
+  end
+
+  class ActionDispatch::IntegrationTest
+
+    # Log in as a particular user.
+    def log_in_as(user, password: 'password')
+      post login_path, params: { session: { email: user.email,
+                                            password: password } }
+    end
   end
 end
